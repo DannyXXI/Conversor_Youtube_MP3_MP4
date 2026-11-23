@@ -1,0 +1,5 @@
+# librería para descargar vídeos y audio de Youtube y otros sitios web
+yt-dlp
+
+# librería para convertir vídeos a MP4 y audio a MP3 (sin instalar ffmpeg en el sistema)
+imageio-ffmpeg
