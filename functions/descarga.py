@@ -1,6 +1,7 @@
 import os              # librería para trabajar con rutas y archivos
 import imageio_ffmpeg  # librería para trabajar con ffmpeg sin tener que instalarlo
 import yt_dlp          # librería para descargar videos de YouTube
+from functions.errores import traducir_error  # función para traducir los errores de yt-dlp a mensajes para el usuario
 
 
 # función para descargar un video de YouTube en formato MP4
@@ -17,16 +18,7 @@ def descargar_mp4(url, carpeta, nombre) -> bool:
         "noplaylist": True,  # indica que no se descargue la playlist completa (solo el vídeo)
     }
 
-    try:
-        with yt_dlp.YoutubeDL(opciones) as ydl: ydl.download([url]) # se descarga el video con las opciones definidas
-        
-        return True # si todo ha salido bien, se devuelve True
-    
-    except yt_dlp.utils.DownloadError as error:
-        
-        print(f"\nError al descargar: {error}") # si habido un error al descargar, se muestra el error al usuario
-        
-        return False # si ha habido un error, se devuelve False
+    return descargar(opciones, url) # se descarga el video con las opciones definidas
 
 
 # función para descargar un video de YouTube en formato MP3
@@ -50,14 +42,26 @@ def descargar_mp3(url, carpeta, nombre) -> bool:
         
     }
 
+    return descargar(opciones, url) # se descarga el video con las opciones definidas
+
+
+# función para descargar un video de Youtube con las opciones definidas
+def descargar(opciones, url) -> bool:
     try:
         with yt_dlp.YoutubeDL(opciones) as ydl: ydl.download([url]) # se descarga el video con las opciones definidas
-        
+            
         return True # si todo ha salido bien, se devuelve True
-    
+        
     except yt_dlp.utils.DownloadError as error:
         
-        print(f"\nError al descargar: {error}") # si habido un error al descargar, se muestra el error al usuario
+        print(f"\nError: {traducir_error(error)}") # mensaje de error de yt-dlp traducido a un mensaje claro para el usuario
         
-        return False # si ha habido un error, se devuelve False
+    except OSError as error:
+        
+        print(f"\nError al guardar el archivo: {error}") # mensaje de error si hay un problema al guardar el archivo
+        
+    except KeyboardInterrupt:
+        
+        print("\nDescarga cancelada.") # mensaje de error si el usuario cancela la descarga con Ctrl+C
 
+    return False # si ha habido un error, se devuelve False
